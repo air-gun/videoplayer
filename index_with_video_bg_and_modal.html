@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VideoPlayer — скачать APK</title>
+  <meta name="description" content="Современный видеоплеер для Android. Нажмите кнопку, чтобы скачать APK и установить." />
+  <meta name="theme-color" content="#0b0f19" />
+  <style>
+    :root{
+      --bg:#0b0f19; --fg:#e5e7eb; --muted:#94a3b8;
+      --btn:#2563eb; --btn-hover:#1d4ed8; --ring:rgba(37,99,235,.35);
+      --glass: rgba(255,255,255,.06);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; color:var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", Arial;
+      background: var(--bg);
+      overflow-x:hidden;
+    }
+    /* --- Decorative background like a video hosting wall --- */
+    .bg{
+      position:fixed; inset:0; z-index:-1; overflow:hidden;
+      filter: saturate(1.1) contrast(1.05);
+    }
+    .bg::before{
+      content:""; position:absolute; inset:-10%;
+      background-image:
+        radial-gradient(1200px 600px at 80% -10%, #243244 0%, transparent 55%),
+        radial-gradient(900px 500px at 5% 110%, #1d2840 0%, transparent 58%),
+        linear-gradient(180deg, #0b0f19, #0b0f19);
+      opacity:.95;
+    }
+    /* tiled svg of thumbnails with play icons */
+    .bg::after{
+      content:""; position:absolute; inset:-6%;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180" viewBox="0 0 320 180"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="%231f2937" offset="0"/><stop stop-color="%23111a29" offset="1"/></linearGradient></defs><rect width="320" height="180" rx="16" ry="16" fill="url(%23g)" /><circle cx="64" cy="90" r="24" fill="%23ffffff14"/><polygon points="56,78 90,90 56,102" fill="%23ffffffaa"/></svg>');
+      background-size: 360px 220px;
+      background-repeat: repeat;
+      opacity:.18;
+      filter: blur(6px);
+      transform: rotate(-1deg) scale(1.02);
+    }
+    .wrap{ width:min(880px,92vw); margin: 0 auto; text-align:center; padding:72px 24px 56px }
+    .logo{ font-weight:700; letter-spacing:.3px; font-size:20px; color:var(--muted); margin-bottom:16px; opacity:.9 }
+    h1{ margin:0 0 12px; font-size:clamp(28px,6vw,48px); line-height:1.05 }
+    p.lead{ margin:0 auto 28px; font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:720px }
+    .card{ display:inline-block; padding:22px; border-radius:20px; background:rgba(255,255,255,.05);
+           backdrop-filter: blur(8px); border:1px solid rgba(255,255,255,.08);
+           box-shadow: 0 10px 35px rgba(0,0,0,.35) }
+    .btn{ appearance:none; display:inline-flex; align-items:center; gap:10px; font-weight:600; font-size:18px; padding:16px 22px;
+          border-radius:14px; border:0; color:#fff; background:var(--btn); cursor:pointer;
+          transition: transform .06s ease, box-shadow .2s ease, background-color .2s ease; box-shadow:0 6px 20px var(--ring) }
+    .btn:hover{ background:var(--btn-hover) } .btn:active{ transform:translateY(1px) }
+    .sub{ margin-top:14px; font-size:13px; color:var(--muted) }
+    .badge{ display:inline-block; padding:6px 10px; border-radius:999px; background:rgba(99,102,241,.12); color:#c7d2fe; font-size:12px; margin-left:8px }
+    a{text-decoration:none}
+    footer{ position:fixed; bottom:10px; left:50%; transform:translateX(-50%); font-size:12px; color:#8b9bb3 }
+    /* Modal */
+    .modal{
+      position:fixed; inset:0; display:none; align-items:center; justify-content:center; padding:20px;
+      background: rgba(0,0,0,.55);
+    }
+    .modal[open]{ display:flex }
+    .sheet{ width:min(560px,94vw); border-radius:18px; background: #0f1626cc; color:var(--fg);
+            border:1px solid rgba(255,255,255,.08); box-shadow:0 20px 60px rgba(0,0,0,.5); padding:22px 20px }
+    .sheet h2{ margin:0 0 8px; font-size:20px }
+    .sheet p{ margin:6px 0; color:#b7c3d7; font-size:14px }
+    .row{ display:flex; gap:10px; align-items:center; margin-top:12px }
+    .small{ font-size:12px; color:#8aa0bf }
+    .close{ margin-left:auto; background:transparent; border:0; color:#cbd5e1; font-size:24px; cursor:pointer }
+    code{ background: #ffffff12; padding:2px 6px; border-radius:6px }
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+
+  <main class="wrap">
+    <div class="logo">VideoPlayer <span class="badge">Android</span></div>
+    <h1>Современный видеоплеер</h1>
+    <p class="lead">Минималистичный, быстрый и приятный глазу. Нажмите кнопку, чтобы скачать APK и установить на Android.</p>
+
+    <div class="card">
+      <!-- ВАЖНО: если используешь Releases, поменяй APK_URL ниже -->
+      <button id="btn" class="btn" type="button">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 3a1 1 0 0 1 1 1v9.586l2.293-2.293a1 1 0 0 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L11 13.586V4a1 1 0 0 1 1-1zM5 20a1 1 0 1 1 0-2h14a1 1 0 1 1 0 2H5z"/></svg>
+        Скачать APK
+      </button>
+      <div class="sub">Файл: <code>VIDEO-25.09.2024.apk</code> • Устанавливается только на Android.</div>
+    </div>
+  </main>
+
+  <footer>© <span id="year"></span> VideoPlayer</footer>
+
+  <!-- Install helper modal -->
+  <div class="modal" id="installModal" role="dialog" aria-modal="true" aria-labelledby="ih-title">
+    <div class="sheet">
+      <div class="row">
+        <h2 id="ih-title">Как установить APK</h2>
+        <button class="close" id="closeModal" aria-label="Закрыть">×</button>
+      </div>
+      <p><strong>1.</strong> Дождитесь завершения загрузки файла <code>VIDEO-25.09.2024.apk</code>.</p>
+      <p><strong>2.</strong> Нажмите уведомление «APK загружен» или откройте «Загрузки» в браузере.</p>
+      <p><strong>3.</strong> Выберите <em>Установить</em>.</p>
+      <p class="small">Примечание: Браузеры Android не разрешают автоматически открывать установщик без вашего нажатия — это сделано ради безопасности.</p>
+    </div>
+  </div>
+
+  <script>
+    const APK_URL = "VIDEO-25.09.2024.apk"; // ← если используешь Releases, поставь сюда URL /releases/latest/download/...
+    const btn = document.getElementById('btn');
+    const modal = document.getElementById('installModal');
+    const closeModal = document.getElementById('closeModal');
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function triggerDownload(url){
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = ""; // подсказка «скачать»
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    btn.addEventListener('click', function(){
+      triggerDownload(APK_URL);
+      setTimeout(()=>{ modal.setAttribute('open',''); }, 400); // показать инструкцию
+    });
+
+    closeModal.addEventListener('click', ()=> modal.removeAttribute('open'));
+    modal.addEventListener('click', (e)=>{ if(e.target === modal) modal.removeAttribute('open') });
+  </script>
+</body>
+</html>
